@@ -10,10 +10,11 @@ import {
   RadioGroup,
   FormControlLabel,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const CreateRoom = () => {
   const defaultVotes = 2;
+  const navigate = useNavigate();
 
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
@@ -38,7 +39,7 @@ const CreateRoom = () => {
 
     fetch("/api/create-room", requestOptions)
       .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((data) => navigate("/room/" + data.code));
   };
 
   return (
