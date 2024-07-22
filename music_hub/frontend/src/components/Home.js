@@ -3,17 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import CreateRoom from "./CreateRoom";
 import RoomJoin from "./RoomJoin";
 import Room from "./Room";
-import {
-  TextField,
-  Typography,
-  Button,
-  Grid,
-  FormHelperText,
-  FormControl,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-} from "@material-ui/core";
+import { Typography, Button, Grid } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 
 const HomeContent = () => {
