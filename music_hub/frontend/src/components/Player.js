@@ -10,7 +10,7 @@ import { PlayArrow, SkipNext, Pause } from "@mui/icons-material";
 
 const Player = ({ song }) => {
   return (
-    <Card align="center">
+    <Card align="center" style={{ maxWidth: "400px", margin: "auto" }}>
       <Grid container alignItems="center">
         <Grid item align="center" xs={4}>
           <img

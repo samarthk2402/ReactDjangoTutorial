@@ -54,7 +54,7 @@ const Room = () => {
 
   useEffect(() => {
     getCurrentSong();
-    let interval = setInterval(getCurrentSong, 5000);
+    let interval = setInterval(getCurrentSong, 1000);
 
     return () => {
       clearInterval(interval);
@@ -134,13 +134,21 @@ const Room = () => {
           </Grid>
         </>
       ) : (
-        <Grid container spacing={1}>
+        <Grid container spacing={2}>
           <Grid item xs={12} align="center">
-            <Typography component="h3" variant="h3">
+            <Typography component="h4" variant="h4">
               Code: {roomCode}
             </Typography>
           </Grid>
-          <Player song={song} />
+          <Grid
+            item
+            xs={12}
+            container
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Player song={song} />
+          </Grid>
           {isHost ? (
             <Grid item xs={12} align="center">
               <Button
