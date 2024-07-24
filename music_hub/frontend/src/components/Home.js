@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import CreateRoom from "./CreateRoom";
 import RoomJoin from "./RoomJoin";
 import Room from "./Room";
-import { Typography, Button, Grid } from "@material-ui/core";
+import { Typography, Button, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const HomeContent = () => {
@@ -61,7 +61,16 @@ const Home = () => {
     <Router>
       <Routes>
         <Route path="/" element={<HomeContent />} />
-        <Route path="/createroom" element={<CreateRoom />} />
+        <Route
+          path="/createroom"
+          element={
+            <CreateRoom
+              update={false}
+              defaultGuestCanPause={true}
+              defaultVotesToSkip={2}
+            />
+          }
+        />
         <Route path="/joinroom" element={<RoomJoin />} />
         <Route path="/room/:roomCode" element={<Room />} />
       </Routes>

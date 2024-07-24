@@ -9,15 +9,24 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-} from "@material-ui/core";
+  Collapse,
+} from "@mui/material";
+import { Alert } from "@mui/lab";
 import { Link, useNavigate } from "react-router-dom";
 
-const CreateRoom = () => {
-  const defaultVotes = 2;
+const CreateRoom = ({
+  update,
+  defaultVotesToSkip,
+  defaultGuestCanPause,
+  roomCode,
+  updateCallback,
+}) => {
   const navigate = useNavigate();
 
-  const [guestCanPause, setGuestCanPause] = useState(true);
-  const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
+  const [guestCanPause, setGuestCanPause] = useState(defaultGuestCanPause);
+  const [votesToSkip, setVotesToSkip] = useState(defaultVotesToSkip);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleVotesChange = (event) => {
     setVotesToSkip(Number(event.target.value));
@@ -42,11 +51,58 @@ const CreateRoom = () => {
       .then((data) => navigate("/room/" + data.code));
   };
 
+  const handleUpdateRoom = () => {
+    const requestOptions = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code: roomCode,
+        guest_can_pause: guestCanPause,
+        votes_to_skip: votesToSkip,
+      }),
+    };
+
+    console.log(requestOptions);
+
+    fetch("/api/update-room", requestOptions)
+      .then((request) => {
+        if (request.ok) {
+          setSuccessMsg("Room Settings Updated!");
+        } else {
+          setErrorMsg("Error updating room...");
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
+        <Collapse in={successMsg != "" || errorMsg != ""}>
+          {successMsg != "" ? (
+            <Alert
+              severity="success"
+              onClose={() => {
+                setSuccessMsg("");
+              }}
+            >
+              {successMsg}
+            </Alert>
+          ) : (
+            <Alert
+              severity="error"
+              onClose={() => {
+                setErrorMsg("");
+              }}
+            >
+              {errorMsg}
+            </Alert>
+          )}
+        </Collapse>
+      </Grid>
+      <Grid item xs={12} align="center">
         <Typography component="h4" variant="h4">
-          Create Room
+          {update ? "Settings" : "Create Room"}
         </Typography>
       </Grid>
       <Grid item xs={12} align="center">
@@ -56,7 +112,7 @@ const CreateRoom = () => {
           </FormHelperText>
           <RadioGroup
             row
-            defaultValue="true"
+            defaultValue={defaultGuestCanPause.toString()}
             onChange={handleGuestCanPauseChange}
           >
             <FormControlLabel
@@ -82,22 +138,28 @@ const CreateRoom = () => {
           <TextField
             required={true}
             type="number"
-            defaultValue={defaultVotes}
+            defaultValue={defaultVotesToSkip.toString()}
             inputProps={{ min: 1, style: { textAlign: "center" } }}
             onChange={handleVotesChange}
           />
         </FormControl>
       </Grid>
       <Grid item xs={12} align="center">
-        <Button color="primary" variant="contained" onClick={handleSubmit}>
-          Create A Room
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={update ? handleUpdateRoom : handleSubmit}
+        >
+          {update ? "Update" : "Create"}
         </Button>
       </Grid>
-      <Grid item xs={12} align="center">
-        <Button color="secondary" variant="contained" to="/" component={Link}>
-          Back
-        </Button>
-      </Grid>
+      {update ? null : (
+        <Grid item xs={12} align="center">
+          <Button color="secondary" variant="contained" to="/" component={Link}>
+            Back
+          </Button>
+        </Grid>
+      )}
     </Grid>
   );
 };
