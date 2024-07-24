@@ -19,7 +19,6 @@ const CreateRoom = ({
   defaultVotesToSkip,
   defaultGuestCanPause,
   roomCode,
-  updateCallback,
 }) => {
   const navigate = useNavigate();
 
@@ -78,7 +77,7 @@ const CreateRoom = ({
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
-        <Collapse in={successMsg != "" || errorMsg != ""}>
+        <Collapse in={successMsg != "" || errorMsg != ""} sx={{ width: "30%" }}>
           {successMsg != "" ? (
             <Alert
               severity="success"
@@ -88,7 +87,7 @@ const CreateRoom = ({
             >
               {successMsg}
             </Alert>
-          ) : (
+          ) : errorMsg != "" ? (
             <Alert
               severity="error"
               onClose={() => {
@@ -97,7 +96,7 @@ const CreateRoom = ({
             >
               {errorMsg}
             </Alert>
-          )}
+          ) : null}
         </Collapse>
       </Grid>
       <Grid item xs={12} align="center">

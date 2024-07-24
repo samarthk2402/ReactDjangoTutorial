@@ -66,7 +66,7 @@ const Room = () => {
       {loading ? (
         "Loading..."
       ) : showSettings ? (
-        <Grid container spacing={2}>
+        <>
           <CreateRoom
             update={true}
             roomCode={roomCode}
@@ -78,12 +78,12 @@ const Room = () => {
               color="secondary"
               variant="contained"
               onClick={handleRoomUpdate}
-              align="center"
+              sx={{ margin: "10px" }}
             >
               Back
             </Button>
           </Grid>
-        </Grid>
+        </>
       ) : (
         <Grid container spacing={1}>
           <Grid item xs={12} align="center">
