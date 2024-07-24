@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useResolvedPath } from "react-router-dom";
 import { Typography, Button, Grid } from "@mui/material";
 import CreateRoom from "./CreateRoom";
-
+import Player from "./Player";
 const Room = () => {
   const navigate = useNavigate();
   const { roomCode } = useParams();
@@ -13,8 +13,24 @@ const Room = () => {
   const [needRoomDetails, setNeedRoomDetails] = useState(true);
 
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+  const [song, setSong] = useState({});
 
   const [loading, setLoading] = useState(true);
+
+  const getCurrentSong = () => {
+    fetch("/spotify/get-current-song")
+      .then((response) => {
+        if (!response.ok) {
+          return {};
+        } else {
+          return response.json();
+        }
+      })
+      .then((data) => {
+        setSong(data);
+        console.log(data);
+      });
+  };
 
   const handleLeaveRoom = () => {
     const requestOptions = {
@@ -37,26 +53,34 @@ const Room = () => {
   };
 
   useEffect(() => {
+    getCurrentSong();
+    let interval = setInterval(getCurrentSong, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
     if (needRoomDetails) {
       setLoading(true);
 
       const authenticateSpotify = () => {
-        console.log(
-          "spotify authentication: " + spotifyAuthenticated.toString()
-        );
         fetch("/spotify/is-authenticated")
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
+            console.log("Authenticated: " + data.status.toString());
             setSpotifyAuthenticated(data.status);
             if (!data.status) {
               fetch("/spotify/get-auth-url")
                 .then((response) => response.json())
                 .then((data) => {
                   window.location.replace(data.url);
-                });
+                })
+                .catch((err) => console.log(err));
             }
-          });
+          })
+          .catch((err) => console.log(err));
       };
 
       const getRoomDetails = () => {
@@ -77,7 +101,8 @@ const Room = () => {
             if (data.is_host) {
               authenticateSpotify();
             }
-          });
+          })
+          .catch((err) => console.log(err));
       };
 
       getRoomDetails();
@@ -115,21 +140,7 @@ const Room = () => {
               Code: {roomCode}
             </Typography>
           </Grid>
-          <Grid item xs={12} align="center">
-            <Typography component="h6" variant="h6">
-              Guest Can Pause: {guestCanPause.toString()}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} align="center">
-            <Typography component="h6" variant="h6">
-              Votes to skip: {votesToSkip}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} align="center">
-            <Typography component="h6" variant="h6">
-              Host: {isHost.toString()}
-            </Typography>
-          </Grid>
+          <Player song={song} />
           {isHost ? (
             <Grid item xs={12} align="center">
               <Button
