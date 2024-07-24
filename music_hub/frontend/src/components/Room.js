@@ -12,6 +12,8 @@ const Room = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [needRoomDetails, setNeedRoomDetails] = useState(true);
 
+  const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   const handleLeaveRoom = () => {
@@ -35,9 +37,27 @@ const Room = () => {
   };
 
   useEffect(() => {
-    console.log(needRoomDetails);
     if (needRoomDetails) {
       setLoading(true);
+
+      const authenticateSpotify = () => {
+        console.log(
+          "spotify authentication: " + spotifyAuthenticated.toString()
+        );
+        fetch("/spotify/is-authenticated")
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            setSpotifyAuthenticated(data.status);
+            if (!data.status) {
+              fetch("/spotify/get-auth-url")
+                .then((response) => response.json())
+                .then((data) => {
+                  window.location.replace(data.url);
+                });
+            }
+          });
+      };
 
       const getRoomDetails = () => {
         fetch("/api/get-room?code=" + roomCode)
@@ -53,6 +73,10 @@ const Room = () => {
             setGuestCanPause(data.guest_can_pause);
             setIsHost(data.is_host);
             setLoading(false);
+
+            if (data.is_host) {
+              authenticateSpotify();
+            }
           });
       };
 
