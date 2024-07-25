@@ -9,6 +9,17 @@ import {
 import { PlayArrow, SkipNext, Pause } from "@mui/icons-material";
 
 const Player = ({ song }) => {
+  const handlePause = () => {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/pause-song", requestOptions)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  };
+
   return (
     <Card align="center" style={{ maxWidth: "400px", margin: "auto" }}>
       <Grid container alignItems="center">
@@ -29,7 +40,11 @@ const Player = ({ song }) => {
           </Typography>
           <div>
             <IconButton>
-              {song.isPlaying ? <Pause></Pause> : <PlayArrow></PlayArrow>}
+              {song.isPlaying ? (
+                <Pause onClick={handlePause}></Pause>
+              ) : (
+                <PlayArrow></PlayArrow>
+              )}
             </IconButton>
             <IconButton>
               <SkipNext></SkipNext>

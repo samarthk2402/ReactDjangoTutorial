@@ -106,3 +106,9 @@ class CurrentSong(APIView):
             return Response({"Bad Request": "User not host of room..."}, status=status.HTTP_403_FORBIDDEN)
 
         return Response({"Bad Request": "User not in a room..."}, status=status.HTTP_400_BAD_REQUEST)
+    
+class PauseSong(APIView):
+    def put(self, request, format=None):
+        response = execute_spotify_api_call(self.request.session.session_key, "/player/pause", put_=True)
+        return Response(response, status=response.get("status"))
+
