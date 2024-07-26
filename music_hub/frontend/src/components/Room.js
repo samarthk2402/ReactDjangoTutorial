@@ -14,6 +14,7 @@ const Room = () => {
 
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
   const [song, setSong] = useState({});
+  const [songPlaying, setSongPlaying] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -22,12 +23,17 @@ const Room = () => {
       .then((response) => {
         if (!response.ok) {
           return {};
+        } else if (response.status === 204) {
+          console.log("no song playing");
+          setSongPlaying(false);
+          return {};
         } else {
           return response.json();
         }
       })
       .then((data) => {
         setSong(data);
+        setSongPlaying(true);
         console.log(data);
       });
   };
@@ -137,7 +143,7 @@ const Room = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} align="center">
             <Typography component="h4" variant="h4">
-              Code: {roomCode}
+              Room Code: {roomCode}
             </Typography>
           </Grid>
           <Grid
@@ -147,7 +153,13 @@ const Room = () => {
             alignItems="center"
             justifyContent="center"
           >
-            <Player song={song} />
+            {songPlaying ? (
+              <Player song={song} />
+            ) : (
+              <Typography color="textSecondary" variant="subtitle1">
+                No song is playing on your spotify account!
+              </Typography>
+            )}
           </Grid>
           {isHost ? (
             <Grid item xs={12} align="center">

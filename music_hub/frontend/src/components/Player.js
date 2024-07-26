@@ -1,14 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Typography,
   Card,
   IconButton,
   LinearProgress,
+  Collapse,
 } from "@mui/material";
+import { Alert } from "@mui/lab";
 import { PlayArrow, SkipNext, Pause } from "@mui/icons-material";
 
 const Player = ({ song }) => {
+  const [premium, setPremium] = useState(false);
+
+  const isPremium = () => {
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/is-premium", requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.product !== "premium") {
+          setPremium(false);
+        } else {
+          setPremium(true);
+        }
+      });
+  };
+
   const handlePause = () => {
     const requestOptions = {
       method: "PUT",
@@ -20,8 +41,26 @@ const Player = ({ song }) => {
       .then((data) => console.log(data));
   };
 
+  const handlePlay = () => {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/play-song", requestOptions)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  };
+
+  useEffect(() => {
+    isPremium();
+  }, []);
+
   return (
     <Card align="center" style={{ maxWidth: "400px", margin: "auto" }}>
+      <Collapse in={!premium}>
+        <Alert severity="warning">Requires spotify premium account</Alert>
+      </Collapse>
       <Grid container alignItems="center">
         <Grid item align="center" xs={4}>
           <img
@@ -39,14 +78,14 @@ const Player = ({ song }) => {
             {song.artist}
           </Typography>
           <div>
-            <IconButton>
+            <IconButton disabled={!premium}>
               {song.isPlaying ? (
                 <Pause onClick={handlePause}></Pause>
               ) : (
-                <PlayArrow></PlayArrow>
+                <PlayArrow onClick={handlePlay}></PlayArrow>
               )}
             </IconButton>
-            <IconButton>
+            <IconButton disabled={!premium}>
               <SkipNext></SkipNext>
             </IconButton>
           </div>
