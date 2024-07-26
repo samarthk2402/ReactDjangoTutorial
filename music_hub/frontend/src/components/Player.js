@@ -10,7 +10,7 @@ import {
 import { Alert } from "@mui/lab";
 import { PlayArrow, SkipNext, Pause } from "@mui/icons-material";
 
-const Player = ({ song }) => {
+const Player = ({ song, isHost }) => {
   const [premium, setPremium] = useState(false);
 
   const isPremium = () => {
@@ -59,7 +59,11 @@ const Player = ({ song }) => {
   return (
     <Card align="center" style={{ maxWidth: "400px", margin: "auto" }}>
       <Collapse in={!premium}>
-        <Alert severity="warning">Requires spotify premium account</Alert>
+        <Alert severity="warning">
+          {isHost
+            ? "Requires spotify premium account"
+            : "Host does not have a spotify premium account"}
+        </Alert>
       </Collapse>
       <Grid container alignItems="center">
         <Grid item align="center" xs={4}>

@@ -154,7 +154,7 @@ const Room = () => {
             justifyContent="center"
           >
             {songPlaying ? (
-              <Player song={song} />
+              <Player song={song} isHost={isHost} />
             ) : (
               <Typography color="textSecondary" variant="subtitle1">
                 No song is playing on your spotify account!
