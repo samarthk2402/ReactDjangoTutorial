@@ -76,12 +76,13 @@ def execute_spotify_api_call(session_id, endpoint, post_=False, put_=False):
 
     if post_:
         response = post(BASE_URL + endpoint, headers=header)
+        return response.json()
     if put_:
         response = put(BASE_URL + endpoint, headers=header)
     else:
         response = get(BASE_URL + endpoint, {}, headers=header)
 
     try:
-        return response.json()
-    except:
-        return {"Error": "Issue with request...", "Response" : response}
+        return response.json()  # Correct usage
+    except ValueError:
+        return {"Error": "Issue parsing JSON", "Response": str(response)}

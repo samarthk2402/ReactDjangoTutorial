@@ -10,8 +10,9 @@ import {
 import { Alert } from "@mui/lab";
 import { PlayArrow, SkipNext, Pause } from "@mui/icons-material";
 
-const Player = ({ song, isHost }) => {
+const Player = ({ song, isHost, guestCanPause, votesToSkip }) => {
   const [premium, setPremium] = useState(false);
+  const [skipVotes, setSkipVotes] = useState(0);
 
   const isPremium = () => {
     const requestOptions = {
@@ -52,19 +53,23 @@ const Player = ({ song, isHost }) => {
       .then((data) => console.log(data));
   };
 
+  const handleSkip = () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/skip", requestOptions)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  };
+
   useEffect(() => {
     isPremium();
   }, []);
 
   return (
     <Card align="center" style={{ maxWidth: "400px", margin: "auto" }}>
-      <Collapse in={!premium}>
-        <Alert severity="warning">
-          {isHost
-            ? "Requires spotify premium account"
-            : "Host does not have a spotify premium account"}
-        </Alert>
-      </Collapse>
       <Grid container alignItems="center">
         <Grid item align="center" xs={4}>
           <img
@@ -82,19 +87,29 @@ const Player = ({ song, isHost }) => {
             {song.artist}
           </Typography>
           <div>
-            <IconButton disabled={!premium}>
+            <IconButton disabled={!premium || !guestCanPause}>
               {song.isPlaying ? (
                 <Pause onClick={handlePause}></Pause>
               ) : (
                 <PlayArrow onClick={handlePlay}></PlayArrow>
               )}
             </IconButton>
-            <IconButton disabled={!premium}>
-              <SkipNext></SkipNext>
+            <IconButton disabled={!premium && isHost}>
+              <SkipNext onClick={handleSkip}></SkipNext>
             </IconButton>
           </div>
+          <Typography color="CaptionText" variant="subtitle1">
+            Skip Votes: {song.votes}/{song.votesNeeded}
+          </Typography>
         </Grid>
       </Grid>
+      <Collapse in={!premium}>
+        <Alert severity="warning">
+          {isHost
+            ? "Modifying playback state requires spotify premium account"
+            : "Host does not have a spotify premium account"}
+        </Alert>
+      </Collapse>
       <LinearProgress
         variant="determinate"
         value={(song.playTime / song.duration) * 100}

@@ -28,12 +28,12 @@ const Room = () => {
           setSongPlaying(false);
           return {};
         } else {
+          setSongPlaying(true);
           return response.json();
         }
       })
       .then((data) => {
         setSong(data);
-        setSongPlaying(true);
         console.log(data);
       });
   };
@@ -154,10 +154,15 @@ const Room = () => {
             justifyContent="center"
           >
             {songPlaying ? (
-              <Player song={song} isHost={isHost} />
+              <Player
+                song={song}
+                isHost={isHost}
+                guestCanPause={guestCanPause}
+                votesToSkip={votesToSkip}
+              />
             ) : (
               <Typography color="textSecondary" variant="subtitle1">
-                No song is playing on your spotify account!
+                Play a song from spotify
               </Typography>
             )}
           </Grid>
